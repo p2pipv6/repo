@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        window.onload = function() {
+            const productId = getQueryParam("id");  // Get dynamic parameter
+            
+            if (productId) {
+                // Redirect to deep link
+                window.location.href = "p2p://open/product?id=" + encodeURIComponent(productId);
+                
+                // Fallback to Play Store if app is not installed
+                setTimeout(() => {
+                    window.location.href = "https://play.google.com/store/apps/details?id=com.example.myapp";
+                }, 3000);
+            } else {
+                document.body.innerHTML = "<p>Invalid deep link!</p>";
+            }
+        };
+    </script>
+</head>
+<body>
+    <p>Redirecting... If nothing happens, <a id="deeplink">click here</a>.</p>
+    <script>
+        document.getElementById("deeplink").href = "p2p://open/product?id=" + getQueryParam("id");
+    </script>
+</body>
+</html>

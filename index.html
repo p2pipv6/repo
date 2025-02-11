@@ -10,17 +10,43 @@
             return urlParams.get(name);
         }
 
+        function getDeviceType() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            if (/android/i.test(userAgent)) {
+                return "Android";
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return "iOS";
+            } else {
+                return "PC";
+            }
+        }
+
         window.onload = function() {
             const productId = getQueryParam("id");  // Get dynamic parameter
-            
+            const deviceType = getDeviceType();
+
             if (productId) {
-                // Redirect to deep link
-                window.location.href = "p2p://open/product?id=" + encodeURIComponent(productId);
-                
-                // Fallback to Play Store if app is not installed
-                setTimeout(() => {
-                    window.location.href = "https://play.google.com/store/apps/details?id=com.example.myapp";
-                }, 3000);
+                if (deviceType === "Android") {
+                    // Redirect to deep link for Android
+                    window.location.href = "p2p://open/product?id=" + encodeURIComponent(productId);
+                    
+                    // Fallback to Google Play Store
+                    setTimeout(() => {
+                        window.location.href = "https://play.google.com/store/apps/details?id=com.jio.pki.ipv6comm";
+                    }, 3000);
+                } else if (deviceType === "iOS") {
+                    // Redirect to Apple App Store
+                    window.location.href = "https://apps.apple.com/us/app/your-ios-app/id123456789";
+                } else {
+                    // PC Browser - Show message instead of redirecting
+                    document.body.innerHTML = `
+                        <h2>Use a Mobile Device</h2>
+                        <p>This link only works on a mobile device. Please open it on your phone.</p>
+                        <p>If you have the app installed, manually enter this URL:</p>
+                        <p><strong>p2p://open/product?id=${productId}</strong></p>
+                    `;
+                }
             } else {
                 document.body.innerHTML = "<p>Invalid deep link!</p>";
             }
